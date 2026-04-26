@@ -1,0 +1,42 @@
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Observable, throwError, catchError, switchMap } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+
+export const authInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
+  const authService = inject(AuthService);
+  const token = authService.getAccessToken();
+
+  // Skip auth endpoints
+  if (req.url.includes('/auth/')) {
+    return next(req);
+  }
+
+  const authReq = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  return next(authReq).pipe(
+    catchError(error => {
+      // 401 → attempt token refresh
+      if (error.status === 401 && authService.getRefreshToken()) {
+        return authService.refreshToken().pipe(
+          switchMap(response => {
+            const retryReq = req.clone({
+              setHeaders: { Authorization: `Bearer ${response.accessToken}` },
+            });
+            return next(retryReq);
+          }),
+          catchError(refreshError => {
+            authService.logout();
+            return throwError(() => refreshError);
+          })
+        );
+      }
+      return throwError(() => error);
+    })
+  );
+};
