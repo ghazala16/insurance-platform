@@ -77,7 +77,11 @@ jobs:
         run: npm run test:ci
 
       - name: Build (production)
-        run: npm run build:prod
+        run: npm run build -- --configuration production
+
+      - run: npm ci
+
+      - run: npm run build -- --configuration production
 
   # ─────────────────────────────────────────────────────────
   # JOB 3: Build & Push Docker Images (main branch only)
