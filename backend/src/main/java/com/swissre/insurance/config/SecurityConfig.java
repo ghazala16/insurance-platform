@@ -1,7 +1,7 @@
 package com.swissre.insurance.config;
 
-import com.swissre.insurance.security.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +24,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.swissre.insurance.security.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -48,9 +50,10 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
-                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        // .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         // Admin only
-                        .requestMatchers("/actuator/**").hasRole("ADMIN")
+                        // .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/policies/**").hasAnyRole("MANAGER", "ADMIN")
                         // All others require authentication
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

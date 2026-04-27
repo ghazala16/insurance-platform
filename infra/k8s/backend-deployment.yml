@@ -9,15 +9,15 @@ metadata:
     app: insureflow-backend
     version: "1.0.0"
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: insureflow-backend
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0   # Zero-downtime deploys
+      maxSurge: 0
+      maxUnavailable: 1   # Zero-downtime deploys
   template:
     metadata:
       labels:
@@ -59,18 +59,19 @@ spec:
               cpu: "500m"
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /actuator/health
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 15
-            failureThreshold: 3
+            initialDelaySeconds: 120
+            periodSeconds: 20
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
+              path: /actuator/health
               port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            failureThreshold: 3
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 10
 ---
 # Backend Service
 apiVersion: v1
@@ -85,30 +86,3 @@ spec:
     - port: 80
       targetPort: 8080
   type: ClusterIP
----
-# HorizontalPodAutoscaler
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: insureflow-backend-hpa
-  namespace: insureflow
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: insureflow-backend
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 70
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80
