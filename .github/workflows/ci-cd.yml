@@ -26,6 +26,11 @@ jobs:
         image: mongo:6
         ports:
           - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     defaults:
       run:
         working-directory: backend
@@ -49,6 +54,11 @@ jobs:
         with:
           name: backend-test-results
           path: backend/target/surefire-reports/
+
+      - name: Check test resources
+        run: |
+          ls -R src/test/resources
+          cat src/test/resources/application-test.properties
 
   # ─────────────────────────────────────────────────────────
   # JOB 2: Test Frontend
