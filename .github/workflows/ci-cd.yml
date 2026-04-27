@@ -151,6 +151,18 @@ jobs:
           kubectl apply -f infra/k8s/backend-deployment.yml -n insureflow
           kubectl apply -f infra/k8s/frontend-deployment.yml -n insureflow
 
+      - name: Create namespace
+        run: kubectl create namespace insureflow --dry-run=client -o yaml | kubectl apply -f -
+          
+      - name: Create Kubernetes Secrets
+        run: |
+          kubectl create secret generic insureflow-secrets \
+            --from-literal=jwt-secret="${{ secrets.JWT_SECRET }}" \
+            --from-literal=mongodb-uri="${{ secrets.MONGODB_URI }}" \
+            --from-literal=service-bus-connection-string="${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING }}" \
+            -n insureflow \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Update backend image
         run: |
           kubectl set image deployment/insureflow-backend \
