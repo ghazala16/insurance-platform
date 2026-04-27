@@ -21,6 +21,11 @@ jobs:
   test-backend:
     name: 🧪 Test Backend
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
     defaults:
       run:
         working-directory: backend
