@@ -142,8 +142,14 @@ jobs:
           resource-group: ${{ env.AKS_RG }}
           cluster-name: ${{ env.AKS_CLUSTER }}
 
-      - name: Apply k8s manifests
-        run: kubectl apply -f infra/k8s/ --namespace ${{ env.K8S_NAMESPACE }}
+      - name: Create namespace
+        run: kubectl create namespace insureflow --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f infra/k8s/namespace-and-config.yml
+          kubectl apply -f infra/k8s/backend-deployment.yml -n insureflow
+          kubectl apply -f infra/k8s/frontend-deployment.yml -n insureflow
 
       - name: Update backend image
         run: |
