@@ -11,7 +11,7 @@ env:
   BACKEND_IMAGE: insureflow-backend
   FRONTEND_IMAGE: insureflow-frontend
   AKS_CLUSTER: insureflow-aks
-  AKS_RG: insureflow-rg
+  AKS_RG: insurance-rg
   K8S_NAMESPACE: insureflow
 
 jobs:
