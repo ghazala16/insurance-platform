@@ -81,7 +81,6 @@
             <artifactId>azure-messaging-servicebus</artifactId>
             <version>${azure-servicebus.version}</version>
         </dependency>
-
         <!-- Azure Application Insights -->
         <dependency>
             <groupId>com.microsoft.azure</groupId>
@@ -119,12 +118,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo.spring30x</artifactId>
-            <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
